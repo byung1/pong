@@ -49,8 +49,11 @@ function love.draw()
     push:apply('start')
 
     -- printing the game
+    love.graphics.rectangle('fill', 1, VIRTUAL_HEIGHT / 2 - 10, 4, 20)
+    love.graphics.rectangle('fill', VIRTUAL_WIDTH - 5, VIRTUAL_HEIGHT / 2 - 10, 4, 20)
+    love.graphics.rectangle('fill', VIRTUAL_WIDTH / 2 - 1, VIRTUAL_HEIGHT / 2 - 1, 4, 4)
     love.graphics.printf(
-        'Hello Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
+        'Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
     )
 
     -- end rendering at virtual resolution
