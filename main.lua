@@ -18,7 +18,7 @@ VIRTUAL_HEIGHT = 243
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
-    -- Setting a more retro-looking font
+    -- Setting a more retro-looking font as Love2D's active font
     smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
     love.graphics.setFont(smallFont)
     
@@ -49,9 +49,8 @@ function love.draw()
     push:apply('start')
 
     -- printing the game
-    -- love.graphics.clear(40, 45, 52, 255)
     love.graphics.printf(
-        'Hello Pong!', 0, VIRTUAL_HEIGHT / 2 - 6, VIRTUAL_WIDTH, 'center'
+        'Hello Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
     )
 
     -- end rendering at virtual resolution
