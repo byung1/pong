@@ -91,6 +91,7 @@ function love.draw()
         'Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
     )
 
+    -- Render paddles
     player1:render()
     player2:render()
 
