@@ -1,8 +1,7 @@
--- Library imports
+-- Library/class imports
 push = require './lib/push'
 Class = require './lib/class'
-
--- Class imports
+require './lib/helpers'
 require './classes/Paddle'
 require './classes/Ball'
 
@@ -26,19 +25,22 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    -- Setting a more retro-looking font as Love2D's active font
+    -- setting a more retro-looking font as Love2D's active font
     smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
     love.graphics.setFont(smallFont)
+    love.window.setTitle('Pong Game')
 
-    -- Initialize the ball
-    ball = Ball(BALL_WIDTH, BALL_HEIGHT)
+    -- setting game state
+    gameState = 'ready'
 
-    -- Initialize our player's paddles
-    verticalCenteredHeight = VIRTUAL_HEIGHT / 2 - PADDLE_HEIGHT / 2
-    player1 = Paddle(1, verticalCenteredHeight, PADDLE_WIDTH, PADDLE_HEIGHT)
-    player2 = Paddle(VIRTUAL_WIDTH - PADDLE_WIDTH - 1, verticalCenteredHeight, PADDLE_WIDTH, PADDLE_HEIGHT)
+    -- initialize the ball
+    ball = Ball(BALL_WIDTH, BALL_HEIGHT)    
+
+    -- initialize our player's paddles
+    player1 = Paddle(1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
+    player2 = Paddle(VIRTUAL_WIDTH - PADDLE_WIDTH - 1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
     
-    -- Initializes our virtual resolution within our window no matter what the
+    -- initializes our virtual resolution within our window no matter what the
     -- dimenstions are and replaces love.window.setMode
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
@@ -69,7 +71,10 @@ function love.update(dt)
         player2.dy = 0
     end
 
-    ball:update(dt)
+    -- Only update the position of the ball when we are in the play state
+    if gameState == 'play' then
+        ball:update(dt)
+    end
 
     player1:update(dt)
     player2:update(dt)
@@ -83,6 +88,13 @@ function love.keypressed(key)
     -- terminates the application
     if key == 'escape' then
         love.event.quit()
+    elseif key == 'enter' or key == 'return' then
+        if gameState == 'ready' then
+            gameState = 'play'
+        else
+            gameState = 'ready'
+            ball:reset()
+        end
     end
 end
 

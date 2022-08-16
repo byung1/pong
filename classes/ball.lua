@@ -3,33 +3,48 @@
 ]]
 Ball = Class{}
 
-function getHorizontalCenteredWidth(object_width)
-    return VIRTUAL_WIDTH / 2 - object_width / 2
-end
-
-function getVerticalCenteredHeight(object_height)
-    return VIRTUAL_HEIGHT / 2 - object_height / 2
-end
-
 function Ball:init(width, height)
     self.x = getHorizontalCenteredWidth(width)
     self.y = getVerticalCenteredHeight(height)
     self.width = width
     self.height = height
-
-    -- 2D velocity variables
-    self.dx = math.random(-75, 75)
-    self.dy = math.random(2) == 1 and -100 or 100
+    self:setVelocity()
 end
+
+function Ball:setVelocity()
+    -- 2D velocity variables
+    self.dx = math.random(2) == 1 and -100 or 100
+    self.dy = math.random(-50, 50) * 1.5
+end
+
+--[[
+    Method that 
+]]
+function Ball:collides(paddle)
+    -- first, check to see if the left edge of either
+    -- is farther to the right than the right edge of the other
+    if self.x > paddle.x + paddle.width or paddle.x > self.x + self.width then
+        return false
+    end
+
+    -- then check to see if the bottom edge of either 
+    -- is higher than the top edge of the other
+    if self.y > paddle.y + paddle.height or paddle.y > self.y + self.height then
+        return false
+    end 
+
+    -- if the above aren't true, they're overlapping
+    return true
+end
+
 
 --[[
     This method will reset the position of the ball to the center of the screen
 ]]
-function Ball:reset(dt)
+function Ball:reset()
     self.x = getHorizontalCenteredWidth(self.width)
     self.y = getVerticalCenteredHeight(self.height)
-    self.dx = math.random(-50, 50)
-    self.dy = math.random(2) == 1 and -100 or 100
+    self:setVelocity()
 end
 
 --[[
