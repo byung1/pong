@@ -4,6 +4,7 @@ Class = require './lib/class'
 
 -- Class imports
 require './classes/Paddle'
+require './classes/Ball'
 
 -- Window Dimensions
 WINDOW_WIDTH = 1280
@@ -15,16 +16,22 @@ VIRTUAL_HEIGHT = 243
 PADDLE_SPEED = 200
 PADDLE_WIDTH = 4
 PADDLE_HEIGHT = 20
+BALL_WIDTH = 4
+BALL_HEIGHT = 4
 
 --[[
     Constructor
 ]]
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
+    math.randomseed(os.time())
 
     -- Setting a more retro-looking font as Love2D's active font
     smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
     love.graphics.setFont(smallFont)
+
+    -- Initialize the ball
+    ball = Ball(BALL_WIDTH, BALL_HEIGHT)
 
     -- Initialize our player's paddles
     verticalCenteredHeight = VIRTUAL_HEIGHT / 2 - PADDLE_HEIGHT / 2
@@ -62,6 +69,8 @@ function love.update(dt)
         player2.dy = 0
     end
 
+    ball:update(dt)
+
     player1:update(dt)
     player2:update(dt)
 end
@@ -83,13 +92,13 @@ end
 function love.draw()
     -- begin rendering at virtual resolution
     push:apply('start')
-
-    -- printing the game
-    love.graphics.rectangle('fill', VIRTUAL_WIDTH / 2 - 1, VIRTUAL_HEIGHT / 2 - 1, 4, 4)
     
     love.graphics.printf(
         'Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
     )
+
+    -- Render Ball
+    ball:render()
 
     -- Render paddles
     player1:render()
