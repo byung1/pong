@@ -27,7 +27,7 @@ function love.load()
     math.randomseed(os.time())
 
     -- setting game state
-    gameState = 'ready'
+    gameState = 'serve'
 
     -- initialize the ball
     ball = Ball(BALL_WIDTH, BALL_HEIGHT)    
@@ -55,7 +55,7 @@ function love.update(dt)
     game:detectBallCollisions()
 
     if game:scoredPoint() then
-        gameState = 'ready'
+        gameState = 'serve'
         ball:reset()
     end
 
@@ -77,11 +77,9 @@ function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
     elseif key == 'enter' or key == 'return' then
-        if gameState == 'ready' then
+        if gameState == 'serve' then
             gameState = 'play'
-        else
-            gameState = 'ready'
-            ball:reset()
+            game:serveBall()
         end
     end
 end

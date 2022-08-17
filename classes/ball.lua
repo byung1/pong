@@ -14,7 +14,7 @@ end
 function Ball:setVelocity()
     -- 2D velocity variables
     self.dx = math.random(2) == 1 and -100 or 100
-    self.dy = math.random(-50, 50) * 1.5
+    self.dy = math.random(-50, 50)
 end
 
 --[[

@@ -11,6 +11,8 @@ function Game:init(player1, player2, ball)
 
     self.player1Score = 0
     self.player2Score = 0
+
+    self.servingPlayer = math.random(2)
 end
 
 --[[
@@ -36,6 +38,17 @@ function Game:processPlayerInput()
     end
 
     -- TODO: add logic here for CPU movement
+end
+
+--[[
+    Logic to serve the ball in the proper direction
+]]
+function Game:serveBall()
+    if self.servingPlayer == 1 then
+        self.ball.dx = 150
+    else
+        self.ball.dx = -150
+    end
 end
 
 --[[
@@ -78,9 +91,11 @@ end
 function Game:scoredPoint()
     if self.ball.x <= 0 then
         self.player2Score = self.player2Score + 1
+        self.servingPlayer = 2
         return true
     elseif self.ball.x >= VIRTUAL_WIDTH then
         self.player1Score = self.player1Score + 1
+        self.servingPlayer = 1
         return true
     end
 
@@ -93,7 +108,17 @@ function Game:draw()
     love.graphics.printf('Player 1', 0, 5, VIRTUAL_WIDTH / 2, 'center')
     love.graphics.printf('Player 2', VIRTUAL_WIDTH / 2, 5, VIRTUAL_WIDTH / 2, 'center')
 
-    -- setting a more retro-looking font as Love2D's active font
+    if gameState == 'serve' then
+        serveFont = love.graphics.newFont('fonts/retro_gaming.ttf', 20)
+        if servingPlayer == 1 then
+            love.graphics.printf('Player 1\'s Serve', 0, 24, VIRTUAL_WIDTH, 'center')
+        else
+            love.graphics.printf('Player 2\'s Serve', 0, 24, VIRTUAL_WIDTH, 'center')
+        end
+        love.graphics.printf('Press \'Enter\' to serve the ball!', 0, 32, VIRTUAL_WIDTH, 'center')
+    end
+
+    -- Printing Score
     scoreFont = love.graphics.newFont('fonts/retro_gaming.ttf', 32)
     love.graphics.setFont(scoreFont)
     love.graphics.printf(tostring(self.player1Score), 0, 20, VIRTUAL_WIDTH / 2, 'center')
