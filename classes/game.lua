@@ -45,9 +45,9 @@ end
 ]]
 function Game:serveBall()
     if self.servingPlayer == 1 then
-        self.ball.dx = 150
+        self.ball:setVelocity(150, math.random(-50, 50))
     else
-        self.ball.dx = -150
+        self.ball:setVelocity(-150, math.random(-50, 50))
     end
 end
 
@@ -102,15 +102,40 @@ function Game:scoredPoint()
     return false
 end
 
+--[[
+    Checks if any player has won
+]]
+function Game:hasWinner()
+    if self.player1Score == 10 or self.player2Score == 10 then
+        return true
+    end
+
+    return false
+end
+
+--[[
+    Restarts the game by resetting initial value
+]]
+function Game:restartGame()
+    self.player1Score = 0
+    self.player2Score = 0
+    self.servingPlayer = math.random(2)
+    self.ball:reset()
+end
+
+--[[
+    Draws the game and renders the different components
+]]
 function Game:draw()
+    -- Printing player names at the top of the screen
     smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
     love.graphics.setFont(smallFont)
     love.graphics.printf('Player 1', 0, 5, VIRTUAL_WIDTH / 2, 'center')
     love.graphics.printf('Player 2', VIRTUAL_WIDTH / 2, 5, VIRTUAL_WIDTH / 2, 'center')
 
+    -- Printing which player serves the ball
     if gameState == 'serve' then
-        serveFont = love.graphics.newFont('fonts/retro_gaming.ttf', 20)
-        if servingPlayer == 1 then
+        if self.servingPlayer == 1 then
             love.graphics.printf('Player 1\'s Serve', 0, 24, VIRTUAL_WIDTH, 'center')
         else
             love.graphics.printf('Player 2\'s Serve', 0, 24, VIRTUAL_WIDTH, 'center')
@@ -118,12 +143,24 @@ function Game:draw()
         love.graphics.printf('Press \'Enter\' to serve the ball!', 0, 32, VIRTUAL_WIDTH, 'center')
     end
 
+    -- Printing victory when a winner is declared
+    if gameState == 'done' then
+        victoryFont = love.graphics.newFont('fonts/retro_gaming.ttf', 20)
+        love.graphics.setFont(victoryFont)
+        if self.player1Score > self.player2Score then
+            love.graphics.printf('Player 1 Wins!', 0, VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH, 'center')
+        else
+            love.graphics.printf('Player 2 Wins!', 0, VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH, 'center')
+        end
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Press \'Enter\' to play again!', 0, VIRTUAL_HEIGHT / 4 + 20, VIRTUAL_WIDTH, 'center')
+    end
+
     -- Printing Score
     scoreFont = love.graphics.newFont('fonts/retro_gaming.ttf', 32)
     love.graphics.setFont(scoreFont)
     love.graphics.printf(tostring(self.player1Score), 0, 20, VIRTUAL_WIDTH / 2, 'center')
     love.graphics.printf(tostring(self.player2Score), VIRTUAL_WIDTH / 2, 20, VIRTUAL_WIDTH / 2, 'center')
-
 
     -- Render Ball and Player Paddles
     self.ball:render()

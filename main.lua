@@ -52,16 +52,20 @@ end
 ]]
 function love.update(dt)
     game:processPlayerInput()
-    game:detectBallCollisions()
+    
+    -- Only update the position of the ball when we are in the `play` state
+    if gameState == 'play' then
+        game:detectBallCollisions()
+        ball:update(dt)
+    end
 
     if game:scoredPoint() then
         gameState = 'serve'
         ball:reset()
-    end
-
-    -- Only update the position of the ball when we are in the `play` state
-    if gameState == 'play' then
-        ball:update(dt)
+        
+        if game:hasWinner() then
+            gameState = 'done'
+        end
     end
 
     player1:update(dt)
@@ -80,6 +84,9 @@ function love.keypressed(key)
         if gameState == 'serve' then
             gameState = 'play'
             game:serveBall()
+        elseif gameState == 'done' then
+            gameState = 'serve'
+            game:restartGame()
         end
     end
 end
