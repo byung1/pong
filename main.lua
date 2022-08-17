@@ -1,9 +1,9 @@
 -- Library/class imports
 push = require './lib/push'
 Class = require './lib/class'
-require './methods/paddle'
 require './classes/Paddle'
 require './classes/Ball'
+require './classes/GameLogic'
 
 -- Window Dimensions
 WINDOW_WIDTH = 1280
@@ -40,6 +40,8 @@ function love.load()
     player1 = Paddle(1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
     player2 = Paddle(VIRTUAL_WIDTH - PADDLE_WIDTH - 1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
     
+    gameLogic = GameLogic(player1, player2, ball)
+
     -- initializes our virtual resolution within our window no matter what the
     -- dimenstions are and replaces love.window.setMode
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -53,10 +55,10 @@ end
     Runs every frame, with `dt` passed in as our delta in seconds
 ]]
 function love.update(dt)
-    processPlayerInput(player1, player2)
-    detectBallCollisions(player1, player2, ball)
+    gameLogic:processPlayerInput()
+    gameLogic:detectBallCollisions()
 
-    if scoredPoint(player1, player2, ball) then
+    if gameLogic:scoredPoint() then
         gameState = 'ready'
         ball:reset()
     end
