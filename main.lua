@@ -1,8 +1,7 @@
--- Library imports
+-- Library/class imports
 push = require './lib/push'
 Class = require './lib/class'
-
--- Class imports
+require './lib/helpers'
 require './classes/Paddle'
 require './classes/Ball'
 
@@ -26,19 +25,22 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    -- Setting a more retro-looking font as Love2D's active font
+    -- setting a more retro-looking font as Love2D's active font
     smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
     love.graphics.setFont(smallFont)
+    love.window.setTitle('Pong Game')
 
-    -- Initialize the ball
-    ball = Ball(BALL_WIDTH, BALL_HEIGHT)
+    -- setting game state
+    gameState = 'ready'
 
-    -- Initialize our player's paddles
-    verticalCenteredHeight = VIRTUAL_HEIGHT / 2 - PADDLE_HEIGHT / 2
-    player1 = Paddle(1, verticalCenteredHeight, PADDLE_WIDTH, PADDLE_HEIGHT)
-    player2 = Paddle(VIRTUAL_WIDTH - PADDLE_WIDTH - 1, verticalCenteredHeight, PADDLE_WIDTH, PADDLE_HEIGHT)
+    -- initialize the ball
+    ball = Ball(BALL_WIDTH, BALL_HEIGHT)    
+
+    -- initialize our player's paddles
+    player1 = Paddle(1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
+    player2 = Paddle(VIRTUAL_WIDTH - PADDLE_WIDTH - 1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
     
-    -- Initializes our virtual resolution within our window no matter what the
+    -- initializes our virtual resolution within our window no matter what the
     -- dimenstions are and replaces love.window.setMode
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
@@ -60,8 +62,8 @@ function love.update(dt)
         player1.dy = 0
     end
 
-     -- player 2 movement
-     if love.keyboard.isDown('up') then
+    -- player 2 movement
+    if love.keyboard.isDown('up') then
         player2.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('down') then
         player2.dy = PADDLE_SPEED
@@ -69,7 +71,39 @@ function love.update(dt)
         player2.dy = 0
     end
 
-    ball:update(dt)
+    -- detect collision for player1
+    if ball:collides(player1) then
+        ball.x = player1.x + player1.width + 1
+        ball:bounce()
+    end
+
+    -- detect collision for player2
+    if ball:collides(player2) then
+        ball.x = player2.x - player2.width - 1
+        ball:bounce()
+    end
+
+    -- detect upper and lower screen boundary collision
+    if ball.y <= 0 then
+        ball.y = 0
+        ball.dy = -ball.dy
+    end
+
+    if ball.y >= VIRTUAL_HEIGHT - ball.height then
+        ball.y = VIRTUAL_HEIGHT - ball.height
+        ball.dy = -ball.dy
+    end
+
+    -- detect whether a ball has cross the sides of the screen
+    if ball.x <= 0 or ball.x >= VIRTUAL_WIDTH then
+        gameState = 'ready'
+        ball:reset()
+    end
+
+    -- Only update the position of the ball when we are in the play state
+    if gameState == 'play' then
+        ball:update(dt)
+    end
 
     player1:update(dt)
     player2:update(dt)
@@ -83,6 +117,13 @@ function love.keypressed(key)
     -- terminates the application
     if key == 'escape' then
         love.event.quit()
+    elseif key == 'enter' or key == 'return' then
+        if gameState == 'ready' then
+            gameState = 'play'
+        else
+            gameState = 'ready'
+            ball:reset()
+        end
     end
 end
 
