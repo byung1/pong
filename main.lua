@@ -1,9 +1,9 @@
 -- Library/class imports
 push = require './lib/push'
 Class = require './lib/class'
-require './lib/helpers'
 require './classes/Paddle'
 require './classes/Ball'
+require './classes/Game'
 
 -- Window Dimensions
 WINDOW_WIDTH = 1280
@@ -40,6 +40,8 @@ function love.load()
     player1 = Paddle(1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
     player2 = Paddle(VIRTUAL_WIDTH - PADDLE_WIDTH - 1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
     
+    game = Game(player1, player2, ball)
+
     -- initializes our virtual resolution within our window no matter what the
     -- dimenstions are and replaces love.window.setMode
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -53,54 +55,15 @@ end
     Runs every frame, with `dt` passed in as our delta in seconds
 ]]
 function love.update(dt)
-    -- player 1 movement
-    if love.keyboard.isDown('w') then
-        player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        player1.dy = PADDLE_SPEED
-    else
-        player1.dy = 0
-    end
+    game:processPlayerInput()
+    game:detectBallCollisions()
 
-    -- player 2 movement
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
-    else
-        player2.dy = 0
-    end
-
-    -- detect collision for player1
-    if ball:collides(player1) then
-        ball.x = player1.x + player1.width + 1
-        ball:bounce()
-    end
-
-    -- detect collision for player2
-    if ball:collides(player2) then
-        ball.x = player2.x - player2.width - 1
-        ball:bounce()
-    end
-
-    -- detect upper and lower screen boundary collision
-    if ball.y <= 0 then
-        ball.y = 0
-        ball.dy = -ball.dy
-    end
-
-    if ball.y >= VIRTUAL_HEIGHT - ball.height then
-        ball.y = VIRTUAL_HEIGHT - ball.height
-        ball.dy = -ball.dy
-    end
-
-    -- detect whether a ball has cross the sides of the screen
-    if ball.x <= 0 or ball.x >= VIRTUAL_WIDTH then
+    if game:scoredPoint() then
         gameState = 'ready'
         ball:reset()
     end
 
-    -- Only update the position of the ball when we are in the play state
+    -- Only update the position of the ball when we are in the `play` state
     if gameState == 'play' then
         ball:update(dt)
     end
@@ -138,13 +101,23 @@ function love.draw()
         'Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
     )
 
-    -- Render Ball
+    -- Render Ball and Player Paddles
     ball:render()
-
-    -- Render paddles
     player1:render()
     player2:render()
 
     -- end rendering at virtual resolution
     push:apply('end')
+end
+
+
+--
+-- Useful Generic Helper Methods
+--
+function getHorizontalCenteredWidth(object_width)
+    return VIRTUAL_WIDTH / 2 - object_width / 2
+end
+
+function getVerticalCenteredHeight(object_height)
+    return VIRTUAL_HEIGHT / 2 - object_height / 2
 end
