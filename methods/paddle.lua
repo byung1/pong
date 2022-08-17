@@ -19,6 +19,8 @@ function processPlayerInput(player1, player2)
     else
         player2.dy = 0
     end
+
+    -- TODO: add logic here for CPU movement
 end
 
 --[[

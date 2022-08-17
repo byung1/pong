@@ -1,7 +1,6 @@
 -- Library/class imports
 push = require './lib/push'
 Class = require './lib/class'
-require './methods/helpers'
 require './methods/paddle'
 require './classes/Paddle'
 require './classes/Ball'
@@ -57,14 +56,12 @@ function love.update(dt)
     processPlayerInput(player1, player2)
     detectBallCollisions(player1, player2, ball)
 
-    print(scoredPoint(player1, player2, ball))
-
-    if scoredPoint(player1, player2, ball) == true then
+    if scoredPoint(player1, player2, ball) then
         gameState = 'ready'
         ball:reset()
     end
 
-    -- Only update the position of the ball when we are in the play state
+    -- Only update the position of the ball when we are in the `play` state
     if gameState == 'play' then
         ball:update(dt)
     end
@@ -102,13 +99,23 @@ function love.draw()
         'Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
     )
 
-    -- Render Ball
+    -- Render Ball and Player Paddles
     ball:render()
-
-    -- Render paddles
     player1:render()
     player2:render()
 
     -- end rendering at virtual resolution
     push:apply('end')
+end
+
+
+--
+-- Useful Generic Helper Methods
+--
+function getHorizontalCenteredWidth(object_width)
+    return VIRTUAL_WIDTH / 2 - object_width / 2
+end
+
+function getVerticalCenteredHeight(object_height)
+    return VIRTUAL_HEIGHT / 2 - object_height / 2
 end
