@@ -8,13 +8,15 @@ function Ball:init(width, height)
     self.y = getVerticalCenteredHeight(height)
     self.width = width
     self.height = height
-    self:setVelocity()
+
+    -- 2D velocity variables
+    self.dx = 0
+    self.dy = 0
 end
 
-function Ball:setVelocity()
-    -- 2D velocity variables
-    self.dx = math.random(2) == 1 and -100 or 100
-    self.dy = math.random(-50, 50) * 1.5
+function Ball:setVelocity(dx, dy)
+    self.dx = dx
+    self.dy = dy
 end
 
 --[[
@@ -55,7 +57,8 @@ end
 function Ball:reset()
     self.x = getHorizontalCenteredWidth(self.width)
     self.y = getVerticalCenteredHeight(self.height)
-    self:setVelocity()
+    self.dx = 0
+    self.dy = 0
 end
 
 --[[

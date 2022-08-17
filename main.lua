@@ -22,16 +22,12 @@ BALL_HEIGHT = 4
     Constructor
 ]]
 function love.load()
+    love.window.setTitle('Pong Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    -- setting a more retro-looking font as Love2D's active font
-    smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
-    love.graphics.setFont(smallFont)
-    love.window.setTitle('Pong Game')
-
     -- setting game state
-    gameState = 'ready'
+    gameState = 'serve'
 
     -- initialize the ball
     ball = Ball(BALL_WIDTH, BALL_HEIGHT)    
@@ -56,16 +52,20 @@ end
 ]]
 function love.update(dt)
     game:processPlayerInput()
-    game:detectBallCollisions()
-
-    if game:scoredPoint() then
-        gameState = 'ready'
-        ball:reset()
-    end
-
+    
     -- Only update the position of the ball when we are in the `play` state
     if gameState == 'play' then
+        game:detectBallCollisions()
         ball:update(dt)
+    end
+
+    if game:scoredPoint() then
+        gameState = 'serve'
+        ball:reset()
+        
+        if game:hasWinner() then
+            gameState = 'done'
+        end
     end
 
     player1:update(dt)
@@ -81,11 +81,12 @@ function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
     elseif key == 'enter' or key == 'return' then
-        if gameState == 'ready' then
+        if gameState == 'serve' then
             gameState = 'play'
-        else
-            gameState = 'ready'
-            ball:reset()
+            game:serveBall()
+        elseif gameState == 'done' then
+            gameState = 'serve'
+            game:restartGame()
         end
     end
 end
@@ -95,19 +96,12 @@ end
 ]]
 function love.draw()
     -- begin rendering at virtual resolution
-    push:apply('start')
-    
-    love.graphics.printf(
-        'Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
-    )
+    push:start()
 
-    -- Render Ball and Player Paddles
-    ball:render()
-    player1:render()
-    player2:render()
+    game:draw()
 
     -- end rendering at virtual resolution
-    push:apply('end')
+    push:finish()
 end
 
 
