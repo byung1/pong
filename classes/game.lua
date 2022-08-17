@@ -76,14 +76,32 @@ end
     If so, a player has scored a point!
 ]]
 function Game:scoredPoint()
-    local ball = self.ball
-    local player1 = self.player1
-    local player2 = self.player2
-
-    if ball.x <= 0 or ball.x >= VIRTUAL_WIDTH then
+    if self.ball.x <= 0 then
+        self.player2Score = self.player2Score + 1
+        return true
+    elseif self.ball.x >= VIRTUAL_WIDTH then
+        self.player1Score = self.player1Score + 1
         return true
     end
 
-    -- TODO: Add scoring logic here and maybe some gamestate changes
     return false
+end
+
+function Game:draw()
+    smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
+    love.graphics.setFont(smallFont)
+    love.graphics.printf('Player 1', 0, 5, VIRTUAL_WIDTH / 2, 'center')
+    love.graphics.printf('Player 2', VIRTUAL_WIDTH / 2, 5, VIRTUAL_WIDTH / 2, 'center')
+
+    -- setting a more retro-looking font as Love2D's active font
+    scoreFont = love.graphics.newFont('fonts/retro_gaming.ttf', 32)
+    love.graphics.setFont(scoreFont)
+    love.graphics.printf(tostring(self.player1Score), 0, 20, VIRTUAL_WIDTH / 2, 'center')
+    love.graphics.printf(tostring(self.player2Score), VIRTUAL_WIDTH / 2, 20, VIRTUAL_WIDTH / 2, 'center')
+
+
+    -- Render Ball and Player Paddles
+    self.ball:render()
+    self.player1:render()
+    self.player2:render()
 end

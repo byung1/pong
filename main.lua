@@ -22,13 +22,9 @@ BALL_HEIGHT = 4
     Constructor
 ]]
 function love.load()
+    love.window.setTitle('Pong Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
-
-    -- setting a more retro-looking font as Love2D's active font
-    smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
-    love.graphics.setFont(smallFont)
-    love.window.setTitle('Pong Game')
 
     -- setting game state
     gameState = 'ready'
@@ -95,19 +91,12 @@ end
 ]]
 function love.draw()
     -- begin rendering at virtual resolution
-    push:apply('start')
-    
-    love.graphics.printf(
-        'Pong!', 0, 20, VIRTUAL_WIDTH, 'center'
-    )
+    push:start()
 
-    -- Render Ball and Player Paddles
-    ball:render()
-    player1:render()
-    player2:render()
+    game:draw()
 
     -- end rendering at virtual resolution
-    push:apply('end')
+    push:finish()
 end
 
 
