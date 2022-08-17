@@ -18,7 +18,19 @@ function Ball:setVelocity()
 end
 
 --[[
-    Method that 
+    Bounces the ball to the opposite direction
+]]
+function Ball:bounce()
+    self.dx = -self.dx * 1.03
+    if self.dy < 0 then
+        self.dy = -math.random(10, 150)
+    else
+        self.dy = math.random(10, 150)
+    end
+end
+
+--[[
+    Method that checks if the ball has collided with a paddle
 ]]
 function Ball:collides(paddle)
     -- first, check to see if the left edge of either
@@ -36,7 +48,6 @@ function Ball:collides(paddle)
     -- if the above aren't true, they're overlapping
     return true
 end
-
 
 --[[
     This method will reset the position of the ball to the center of the screen
