@@ -2,9 +2,9 @@
     The Game Logic Class
 ]]
 
-GameLogic = Class{}
+Game = Class{}
 
-function GameLogic:init(player1, player2, ball)
+function Game:init(player1, player2, ball)
     self.player1 = player1
     self.player2 = player2
     self.ball = ball
@@ -16,7 +16,7 @@ end
 --[[
     Processes the user input during game runtime
 ]]
-function GameLogic:processPlayerInput()
+function Game:processPlayerInput()
     -- player 1 movement
     if love.keyboard.isDown('w') then
         self.player1.dy = -PADDLE_SPEED
@@ -41,7 +41,7 @@ end
 --[[
     Detects collisions for the ball
 ]]
-function GameLogic:detectBallCollisions()
+function Game:detectBallCollisions()
     local ball = self.ball
     local player1 = self.player1
     local player2 = self.player2
@@ -75,7 +75,7 @@ end
     Detect whether a ball has cross the sides of the screen
     If so, a player has scored a point!
 ]]
-function GameLogic:scoredPoint()
+function Game:scoredPoint()
     local ball = self.ball
     local player1 = self.player1
     local player2 = self.player2
