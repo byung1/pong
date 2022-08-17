@@ -23,9 +23,9 @@ end
 function Ball:bounce()
     self.dx = -self.dx * 1.03
     if self.dy < 0 then
-        self.dy = -math.random(10, 150)
+        self.dy = -math.random(25, 150)
     else
-        self.dy = math.random(10, 150)
+        self.dy = math.random(25, 150)
     end
 end
 

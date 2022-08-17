@@ -1,7 +1,8 @@
 -- Library/class imports
 push = require './lib/push'
 Class = require './lib/class'
-require './lib/helpers'
+require './methods/helpers'
+require './methods/paddle'
 require './classes/Paddle'
 require './classes/Ball'
 
@@ -53,49 +54,12 @@ end
     Runs every frame, with `dt` passed in as our delta in seconds
 ]]
 function love.update(dt)
-    -- player 1 movement
-    if love.keyboard.isDown('w') then
-        player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        player1.dy = PADDLE_SPEED
-    else
-        player1.dy = 0
-    end
+    processPlayerInput(player1, player2)
+    detectBallCollisions(player1, player2, ball)
 
-    -- player 2 movement
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
-    else
-        player2.dy = 0
-    end
+    print(scoredPoint(player1, player2, ball))
 
-    -- detect collision for player1
-    if ball:collides(player1) then
-        ball.x = player1.x + player1.width + 1
-        ball:bounce()
-    end
-
-    -- detect collision for player2
-    if ball:collides(player2) then
-        ball.x = player2.x - player2.width - 1
-        ball:bounce()
-    end
-
-    -- detect upper and lower screen boundary collision
-    if ball.y <= 0 then
-        ball.y = 0
-        ball.dy = -ball.dy
-    end
-
-    if ball.y >= VIRTUAL_HEIGHT - ball.height then
-        ball.y = VIRTUAL_HEIGHT - ball.height
-        ball.dy = -ball.dy
-    end
-
-    -- detect whether a ball has cross the sides of the screen
-    if ball.x <= 0 or ball.x >= VIRTUAL_WIDTH then
+    if scoredPoint(player1, player2, ball) == true then
         gameState = 'ready'
         ball:reset()
     end
