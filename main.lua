@@ -1,9 +1,9 @@
 -- Library/class imports
-push = require './lib/push'
-Class = require './lib/class'
-require './classes/Paddle'
-require './classes/Ball'
-require './classes/Game'
+push = require 'lib/push'
+Class = require 'lib/class'
+require 'classes/Paddle'
+require 'classes/Ball'
+require 'classes/Game'
 
 -- Window Dimensions
 WINDOW_WIDTH = 1280
@@ -42,9 +42,17 @@ function love.load()
     -- dimenstions are and replaces love.window.setMode
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
-        resizable = false,
+        resizable = true,
         vsync = true
     })
+end
+
+--[[
+    Allows player to resize the window size of the game
+    The push library will maintain the virtual width and height
+]]
+function love.resize(w, h)
+    push:resize(w, h)
 end
 
 --[[
