@@ -13,6 +13,12 @@ function Game:init(player1, player2, ball)
     self.player2Score = 0
 
     self.servingPlayer = math.random(2)
+
+    self.sounds = {
+        ['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
+        ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static'),
+        ['score'] = love.audio.newSource('sounds/score.wav', 'static')
+    }
 end
 
 --[[
@@ -62,12 +68,14 @@ function Game:detectBallCollisions()
     -- detect collision for player1
     if ball:collides(player1) then
         ball.x = player1.x + player1.width + 1
+        self.sounds['paddle_hit']:play()
         ball:bounce()
     end
 
     -- detect collision for player2
     if ball:collides(player2) then
         ball.x = player2.x - player2.width - 1
+        self.sounds['paddle_hit']:play()
         ball:bounce()
     end
 
@@ -75,12 +83,14 @@ function Game:detectBallCollisions()
     if ball.y <= 0 then
         ball.y = 0
         ball.dy = -ball.dy
+        self.sounds['wall_hit']:play()
     end
 
     -- detect lower screen boundary collision
     if ball.y >= VIRTUAL_HEIGHT - ball.height then
         ball.y = VIRTUAL_HEIGHT - ball.height
         ball.dy = -ball.dy
+        self.sounds['wall_hit']:play()
     end
 end
 
@@ -92,10 +102,12 @@ function Game:scoredPoint()
     if self.ball.x <= 0 then
         self.player2Score = self.player2Score + 1
         self.servingPlayer = 2
+        self.sounds['score']:play()
         return true
     elseif self.ball.x >= VIRTUAL_WIDTH then
         self.player1Score = self.player1Score + 1
         self.servingPlayer = 1
+        self.sounds['score']:play()
         return true
     end
 
