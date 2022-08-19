@@ -7,19 +7,13 @@ require 'assets/Game'
 require 'lib/StateMachine'
 require 'states/BaseState'
 require 'states/TitleScreenState'
+require 'states/TwoPlayerGameState'
 
 -- Window Dimensions
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
-
--- Global Constants
-PADDLE_SPEED = 200
-PADDLE_WIDTH = 4
-PADDLE_HEIGHT = 20
-BALL_WIDTH = 4
-BALL_HEIGHT = 4
 
 --[[
     Constructor
@@ -28,18 +22,6 @@ function love.load()
     love.window.setTitle('Pong Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
-
-    -- setting game state
-    gameState = 'serve'
-
-    -- initialize the ball
-    ball = Ball(BALL_WIDTH, BALL_HEIGHT)    
-
-    -- initialize our player's paddles
-    player1 = Paddle(1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
-    player2 = Paddle(VIRTUAL_WIDTH - PADDLE_WIDTH - 1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
-    
-    
 
     -- initialize fonts
     smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
@@ -52,6 +34,7 @@ function love.load()
     -- initialize state machine with all state-returning functions
     gStateMachine = StateMachine {
         ['title'] = function() return TitleScreenState() end,
+        ['twoPlayerGame'] = function() return TwoPlayerGameState() end
     }
     gStateMachine:change('title')
 
@@ -83,25 +66,6 @@ end
     Runs every frame, with `dt` passed in as our delta in seconds
 ]]
 function love.update(dt)
-    -- game:processPlayerInput()
-    
-    -- -- Only update the position of the ball when we are in the `play` state
-    -- if gameState == 'play' then
-    --     game:detectBallCollisions()
-    --     ball:update(dt)
-    -- end
-
-    -- if game:scoredPoint() then
-    --     gameState = 'serve'
-    --     ball:reset()
-        
-    --     if game:hasWinner() then
-    --         gameState = 'done'
-    --     end
-    -- end
-
-    -- player1:update(dt)
-    -- player2:update(dt)
     gStateMachine:update(dt)
 
     love.keyboard.keysPressed = {}
@@ -116,15 +80,7 @@ function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
     end
-    -- elseif key == 'enter' or key == 'return' then
-    --     if gameState == 'serve' then
-    --         gameState = 'play'
-    --         game:serveBall()
-    --     elseif gameState == 'done' then
-    --         gameState = 'serve'
-    --         game:restartGame()
-    --     end
-    -- end
+
     love.keyboard.keysPressed[key] = true
 end
 

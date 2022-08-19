@@ -14,6 +14,7 @@ function TitleScreenState:update(dt)
     if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
         if self.optionSelect == 0 then
         elseif self.optionSelect == 1 then
+            gStateMachine:change('twoPlayerGame')
         end
     end
 
