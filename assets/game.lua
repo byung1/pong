@@ -11,6 +11,7 @@ function Game:init(player1, player2, ball)
 
     self.player1Score = 0
     self.player2Score = 0
+    self.winningPlayer = 0
 
     self.servingPlayer = math.random(2)
 
@@ -99,11 +100,18 @@ end
     Checks if any player has won
 ]]
 function Game:hasWinner()
-    if self.player1Score == 10 or self.player2Score == 10 then
-        return true
-    end
+    return self.player1Score == 10 or self.player2Score == 10
+end
 
-    return false
+--[[
+
+]]
+function Game:getWinner()
+    if self.player1Score == 10 then
+        return 1
+    else
+        return 2
+    end
 end
 
 --[[

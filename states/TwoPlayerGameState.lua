@@ -87,13 +87,10 @@ function TwoPlayerGameState:render()
 
     -- Printing victory when a winner is declared
     if self.game.roundState == 'done' then
-        
         love.graphics.setFont(victoryFont)
-        if self.player1Score > self.player2Score then
-            love.graphics.printf('Player 1 Wins!', 0, VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH, 'center')
-        else
-            love.graphics.printf('Player 2 Wins!', 0, VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH, 'center')
-        end
+        winningPlayer = self.game:getWinner()
+        love.graphics.printf('Player ' .. tostring(winningPlayer) .. ' Wins!', 0, VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH, 'center')
+
         love.graphics.setFont(smallFont)
         love.graphics.printf('Press \'Enter\' to play again!', 0, VIRTUAL_HEIGHT / 4 + 20, VIRTUAL_WIDTH, 'center')
     end
