@@ -1,9 +1,12 @@
 -- Library/class imports
 push = require 'lib/push'
 Class = require 'lib/class'
-require 'classes/Paddle'
-require 'classes/Ball'
-require 'classes/Game'
+require 'assets/Paddle'
+require 'assets/Ball'
+require 'assets/Game'
+require 'lib/StateMachine'
+require 'states/BaseState'
+require 'states/TitleScreenState'
 
 -- Window Dimensions
 WINDOW_WIDTH = 1280
@@ -36,7 +39,21 @@ function love.load()
     player1 = Paddle(1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
     player2 = Paddle(VIRTUAL_WIDTH - PADDLE_WIDTH - 1, getVerticalCenteredHeight(PADDLE_HEIGHT), PADDLE_WIDTH, PADDLE_HEIGHT)
     
-    game = Game(player1, player2, ball)
+    
+
+    -- initialize fonts
+    smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
+    titleFont = love.graphics.newFont('fonts/retro_gaming.ttf', 48)
+    menuOptionFont = love.graphics.newFont('fonts/retro_gaming.ttf', 10)
+    victoryFont = love.graphics.newFont('fonts/retro_gaming.ttf', 20)
+    scoreFont = love.graphics.newFont('fonts/retro_gaming.ttf', 32)
+
+
+    -- initialize state machine with all state-returning functions
+    gStateMachine = StateMachine {
+        ['title'] = function() return TitleScreenState() end,
+    }
+    gStateMachine:change('title')
 
     -- initializes our virtual resolution within our window no matter what the
     -- dimenstions are and replaces love.window.setMode
@@ -45,6 +62,9 @@ function love.load()
         resizable = true,
         vsync = true
     })
+
+    -- initialize input table
+    love.keyboard.keysPressed = {}
 end
 
 --[[
@@ -55,29 +75,36 @@ function love.resize(w, h)
     push:resize(w, h)
 end
 
+function love.keyboard.wasPressed(key)
+    return love.keyboard.keysPressed[key]
+end
+
 --[[
     Runs every frame, with `dt` passed in as our delta in seconds
 ]]
 function love.update(dt)
-    game:processPlayerInput()
+    -- game:processPlayerInput()
     
-    -- Only update the position of the ball when we are in the `play` state
-    if gameState == 'play' then
-        game:detectBallCollisions()
-        ball:update(dt)
-    end
+    -- -- Only update the position of the ball when we are in the `play` state
+    -- if gameState == 'play' then
+    --     game:detectBallCollisions()
+    --     ball:update(dt)
+    -- end
 
-    if game:scoredPoint() then
-        gameState = 'serve'
-        ball:reset()
+    -- if game:scoredPoint() then
+    --     gameState = 'serve'
+    --     ball:reset()
         
-        if game:hasWinner() then
-            gameState = 'done'
-        end
-    end
+    --     if game:hasWinner() then
+    --         gameState = 'done'
+    --     end
+    -- end
 
-    player1:update(dt)
-    player2:update(dt)
+    -- player1:update(dt)
+    -- player2:update(dt)
+    gStateMachine:update(dt)
+
+    love.keyboard.keysPressed = {}
 end
 
 
@@ -88,15 +115,17 @@ function love.keypressed(key)
     -- terminates the application
     if key == 'escape' then
         love.event.quit()
-    elseif key == 'enter' or key == 'return' then
-        if gameState == 'serve' then
-            gameState = 'play'
-            game:serveBall()
-        elseif gameState == 'done' then
-            gameState = 'serve'
-            game:restartGame()
-        end
     end
+    -- elseif key == 'enter' or key == 'return' then
+    --     if gameState == 'serve' then
+    --         gameState = 'play'
+    --         game:serveBall()
+    --     elseif gameState == 'done' then
+    --         gameState = 'serve'
+    --         game:restartGame()
+    --     end
+    -- end
+    love.keyboard.keysPressed[key] = true
 end
 
 --[[
@@ -106,7 +135,7 @@ function love.draw()
     -- begin rendering at virtual resolution
     push:start()
 
-    game:draw()
+    gStateMachine:render()
 
     -- end rendering at virtual resolution
     push:finish()

@@ -21,10 +21,7 @@ function Game:init(player1, player2, ball)
     }
 end
 
---[[
-    Processes the user input during game runtime
-]]
-function Game:processPlayerInput()
+function Game:update(dt)
     -- player 1 movement
     if love.keyboard.isDown('w') then
         self.player1.dy = -PADDLE_SPEED
@@ -42,6 +39,13 @@ function Game:processPlayerInput()
     else
         self.player2.dy = 0
     end
+end
+
+--[[
+    Processes the user input during game runtime
+]]
+function Game:processPlayerInput()
+
 
     -- TODO: add logic here for CPU movement
 end
@@ -138,9 +142,8 @@ end
 --[[
     Draws the game and renders the different components
 ]]
-function Game:draw()
+function Game:render()
     -- Printing player names at the top of the screen
-    smallFont = love.graphics.newFont('fonts/retro_gaming.ttf', 8)
     love.graphics.setFont(smallFont)
     love.graphics.printf('Player 1', 0, 5, VIRTUAL_WIDTH / 2, 'center')
     love.graphics.printf('Player 2', VIRTUAL_WIDTH / 2, 5, VIRTUAL_WIDTH / 2, 'center')
@@ -157,7 +160,7 @@ function Game:draw()
 
     -- Printing victory when a winner is declared
     if gameState == 'done' then
-        victoryFont = love.graphics.newFont('fonts/retro_gaming.ttf', 20)
+        
         love.graphics.setFont(victoryFont)
         if self.player1Score > self.player2Score then
             love.graphics.printf('Player 1 Wins!', 0, VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH, 'center')
@@ -169,7 +172,6 @@ function Game:draw()
     end
 
     -- Printing Score
-    scoreFont = love.graphics.newFont('fonts/retro_gaming.ttf', 32)
     love.graphics.setFont(scoreFont)
     love.graphics.printf(tostring(self.player1Score), 0, 20, VIRTUAL_WIDTH / 2, 'center')
     love.graphics.printf(tostring(self.player2Score), VIRTUAL_WIDTH / 2, 20, VIRTUAL_WIDTH / 2, 'center')
